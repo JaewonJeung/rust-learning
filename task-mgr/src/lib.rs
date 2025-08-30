@@ -1,13 +1,11 @@
 // lib.rs is the entry point for the task_mgr as a library.
-// pub mod allows the parent module to access the declared module. In lib.rs case, that's any external crate. The children can also access the declared module.
 mod actions;
-// simple mod declaration allows the current and the children to access the declared module
 mod core;
 mod fs;
 
 pub use core::domain::Status;
 use core::domain::Task;
-use fs::local::{LoadError, load_file, save_to_file};
+use fs::local::{LoadError, load_file};
 use std::fmt;
 
 // TODO use config file for this
@@ -52,8 +50,33 @@ impl TaskManager {
     }
 
     pub fn create_task(&mut self, label: String, desc: String, priority: u8) {
-        let task = actions::create::create(label, desc, priority);
-        self.tasks.push(task);
-        save_to_file(TASKS_FILE, &self.tasks);
+        actions::create::create(&mut self.tasks, TASKS_FILE, label, desc, priority);
+    }
+
+    pub fn delete_task(&mut self, id: &str) {
+        actions::delete::delete(&mut self.tasks, TASKS_FILE, id);
+    }
+
+    pub fn list_tasks(&self) {
+        actions::list::list(&self.tasks);
+    }
+
+    pub fn edit_task(
+        &mut self,
+        target_id: &str,
+        label: String,
+        desc: String,
+        priority: u8,
+        status: Status,
+    ) {
+        actions::edit::edit(
+            &mut self.tasks,
+            TASKS_FILE,
+            target_id,
+            label,
+            desc,
+            priority,
+            status,
+        );
     }
 }

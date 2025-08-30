@@ -14,6 +14,20 @@ pub struct Task {
     pub status: Status,
 }
 
+pub fn task_pretty_print(task: &Task) {
+    println!("-------------------------");
+    println!("Label: {}", task.label);
+    println!("Description: {}", task.desc);
+    println!("Priority: {}", task.priority);
+    match task.status {
+        crate::Status::Todo => println!("Status: TODO"),
+        crate::Status::InProgress => println!("Status: IN PROGRESS"),
+        crate::Status::Done => println!("Status: DONE"),
+    }
+    println!("Task ID: {}", task.id);
+    println!("-------------------------");
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Deserialize, Serialize)]
 pub enum Status {
     Todo,

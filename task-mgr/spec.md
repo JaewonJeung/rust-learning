@@ -11,13 +11,16 @@ CLI task manager
 - create tasks
     - label, description, priority, status
 - delete tasks
+    - attempt delete by label first
 
 - list tasks (sort and filter)
+    - pretty print
     - sort by different fields
     - filter by priority or status
 - edit tasks
 
 ## Non func
+- optimize edit and delete
 - use traits to make it hexagonal
     - fs save
 - logging

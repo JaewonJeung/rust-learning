@@ -27,14 +27,15 @@ enum Commands {
         id: String,
     },
     Edit {
-        id: String,
-        #[arg(short, long, help = "The label of the task")]
+        #[arg(short, long, help = "The ID of the task to edit")]
+        target_id: String,
+        #[arg(short, long, help = "The new label of the task")]
         label: String,
-        #[arg(short, long, help = "The description of the task")]
+        #[arg(short, long, help = "The new description of the task")]
         desc: String,
-        #[arg(short, long, help = "The priority of the task")]
+        #[arg(short, long, help = "The new priority of the task")]
         priority: u8,
-        #[arg(short, long, help = "The status of the task")]
+        #[arg(short, long, help = "The new status of the task")]
         status: Status,
     },
 }
@@ -55,21 +56,19 @@ fn main() {
             task_manager.create_task(label, desc, priority);
         }
         Commands::List => {
-            println!("Listing all tasks");
+            task_manager.list_tasks();
         }
         Commands::Delete { id } => {
-            println!("Deleting task with ID: {id}");
+            task_manager.delete_task(&id);
         }
         Commands::Edit {
-            id,
+            target_id,
             label,
             desc,
             priority,
             status,
         } => {
-            println!(
-                "Editing task with ID: {id} to {label} - {desc} with priority {priority} and status {status:?}",
-            );
+            task_manager.edit_task(&target_id, label, desc, priority, status);
         }
     }
 }
