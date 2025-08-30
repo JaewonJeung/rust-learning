@@ -1,20 +1,35 @@
-use clap::ValueEnum;
-use uuid::Uuid;
+use std::str::FromStr;
+
+use serde_derive::{Deserialize, Serialize};
+use ulid::Ulid;
 
 /// normally, you would have an impl of this to have a constructor and getters
 /// instead of making fields public, but since this is a DTO, we can skip that for brevity
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct Task {
-    pub id: Uuid,
+    pub id: Ulid,
     pub label: String,
     pub desc: String,
     pub priority: u8,
     pub status: Status,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, ValueEnum)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Deserialize, Serialize)]
 pub enum Status {
     Todo,
     InProgress,
     Done,
+}
+
+impl FromStr for Status {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s.to_lowercase().as_str() {
+            "todo" => Ok(Status::Todo),
+            "ip" => Ok(Status::InProgress),
+            "done" => Ok(Status::Done),
+            _ => Err(format!("'{}' is not a valid status", s)),
+        }
+    }
 }

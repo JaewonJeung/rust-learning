@@ -18,5 +18,11 @@ CLI task manager
 - edit tasks
 
 ## Non func
+- use traits to make it hexagonal
+    - fs save
 - logging
 - config file/env variable reading for swappable file saving mechanism (json, sqlite)
+- unittests
+- Advanced error handling
+    - anyhow for internal error handling?
+    - thiserror for custom error (maybe focus more on this)

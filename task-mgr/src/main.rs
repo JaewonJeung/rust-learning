@@ -3,7 +3,7 @@ use clap::{Parser, Subcommand};
 // main.rs using the library crate
 use task_mgr::Status;
 // use task_mgr::core::domain::Task; // this is impossible since only `Status` is re-exported from the library
-use task_mgr::actions::create::create;
+use task_mgr::TaskManager;
 
 #[derive(Parser, Debug)]
 #[command(version)]
@@ -41,6 +41,10 @@ enum Commands {
 
 fn main() {
     let args = Cli::parse();
+    let mut task_manager = TaskManager::new().unwrap_or_else(|err| {
+        eprintln!("Error initializing task manager: {}", err);
+        std::process::exit(1);
+    });
 
     match args.action {
         Commands::Create {
@@ -48,15 +52,13 @@ fn main() {
             desc,
             priority,
         } => {
-            create(label, desc, priority);
+            task_manager.create_task(label, desc, priority);
         }
         Commands::List => {
             println!("Listing all tasks");
-            // Here you would add code to list all tasks from your storage
         }
         Commands::Delete { id } => {
-            println!("Deleting task with ID: {}", id);
-            // Here you would add code to delete the task from your storage
+            println!("Deleting task with ID: {id}");
         }
         Commands::Edit {
             id,
@@ -66,10 +68,8 @@ fn main() {
             status,
         } => {
             println!(
-                "Editing task with ID: {} to {} - {} with priority {} and status {:?}",
-                id, label, desc, priority, status
+                "Editing task with ID: {id} to {label} - {desc} with priority {priority} and status {status:?}",
             );
-            // Here you would add code to edit the task in your storage
         }
     }
 }
