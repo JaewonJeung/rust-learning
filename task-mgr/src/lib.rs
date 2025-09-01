@@ -6,6 +6,7 @@ mod fs;
 pub use core::domain::Status;
 use core::domain::Task;
 use fs::local::{LoadError, load_file};
+use std::collections::HashMap;
 use std::fmt;
 
 // TODO use config file for this
@@ -27,7 +28,7 @@ impl fmt::Display for TaskManagerError {
 
 #[derive(Default)]
 pub struct TaskManager {
-    tasks: Vec<Task>,
+    tasks: HashMap<ulid::Ulid, Task>,
 }
 
 impl TaskManager {

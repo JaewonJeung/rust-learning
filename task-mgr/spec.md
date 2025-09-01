@@ -11,21 +11,26 @@ CLI task manager
 - create tasks
     - label, description, priority, status
 - delete tasks
-    - attempt delete by label first
-
 - list tasks (sort and filter)
     - pretty print
-    - sort by different fields
-    - filter by priority or status
 - edit tasks
 
+### v2
+- list sort by different fields
+- filter by priority or status
+- attempt delete by label 
+
+
 ## Non func
-- optimize edit and delete
-- use traits to make it hexagonal
-    - fs save
+- optimize edit and delete (HM)
 - logging
-- config file/env variable reading for swappable file saving mechanism (json, sqlite)
 - unittests
+- config file/env variable reading
+- use traits to make it hexagonal
+    - fs save (json, sqlite)
+
+- gpt review
+
 - Advanced error handling
     - anyhow for internal error handling?
     - thiserror for custom error (maybe focus more on this)
