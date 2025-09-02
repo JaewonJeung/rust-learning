@@ -3,11 +3,13 @@ mod actions;
 mod core;
 mod fs;
 
-pub use core::domain::Status;
 use core::domain::Task;
 use fs::local::{LoadError, load_file};
 use std::collections::HashMap;
 use std::fmt;
+use tracing::{debug, error, info};
+
+pub use core::domain::Status;
 
 // TODO use config file for this
 const TASKS_FILE: &str = "tasks.json";
@@ -33,21 +35,24 @@ pub struct TaskManager {
 
 impl TaskManager {
     pub fn new() -> Result<Self, TaskManagerError> {
-        match load_file(TASKS_FILE) {
+        debug!("Initializing task manager...");
+        let task_mgr = match load_file(TASKS_FILE) {
             Ok(tasks) => Ok(Self { tasks }),
             Err(LoadError::Io(e)) if e.kind() == std::io::ErrorKind::NotFound => {
-                println!("No existing tasks file found, starting fresh.");
+                info!("No existing tasks file found, starting fresh.");
                 Ok(Self::default())
             }
             Err(LoadError::Json(e)) => {
-                eprintln!("Failed to parse the tasks data file. Corrupted file.");
+                error!("Failed to parse the tasks data file. Corrupted file.");
                 Err(TaskManagerError::Json(e))
             }
             Err(LoadError::Io(e)) => {
-                eprintln!("Failed to load tasks file.");
+                error!("Failed to load tasks file.");
                 Err(TaskManagerError::Io(e))
             }
-        }
+        };
+        debug!("Initializing task manager...");
+        task_mgr
     }
 
     pub fn create_task(&mut self, label: String, desc: String, priority: u8) {

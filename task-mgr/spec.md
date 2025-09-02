@@ -22,7 +22,7 @@ CLI task manager
 
 
 ## Non func
-- optimize edit and delete (HM)
+- V optimize edit and delete (HM)
 - logging
 - unittests
 - config file/env variable reading

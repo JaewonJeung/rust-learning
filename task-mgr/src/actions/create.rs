@@ -1,6 +1,7 @@
 use crate::core::domain::{Status, Task};
 use crate::fs::local::save_to_file;
 use std::collections::HashMap;
+use tracing::info;
 use ulid::Ulid;
 
 pub fn create(
@@ -17,10 +18,7 @@ pub fn create(
         priority,
         status: Status::Todo,
     };
-    println!(
-        "Created task: {}",
-        serde_json::to_string_pretty(&task).unwrap()
-    );
+    info!("Created task: {}", task.id);
     tasks.insert(task.id, task);
     save_to_file(file_path, tasks);
 }

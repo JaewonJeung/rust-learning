@@ -3,7 +3,13 @@ use clap::{Parser, Subcommand};
 // main.rs using the library crate
 use task_mgr::Status;
 // use task_mgr::core::domain::Task; // this is impossible since only `Status` is re-exported from the library
+use std::fs::OpenOptions;
 use task_mgr::TaskManager;
+use tracing_subscriber::{EnvFilter, Layer, prelude::*};
+
+const LOG_FILE: &str = "task_mgr.log";
+const INFO_LOG_LEVEL: &str = "info";
+const DEBUG_LOG_LEVEL: &str = "debug";
 
 #[derive(Parser, Debug)]
 #[command(version)]
@@ -40,8 +46,40 @@ enum Commands {
     },
 }
 
+fn init_tracing() {
+    let stdout_env_filter =
+        EnvFilter::try_from_default_env().unwrap_or_else(|_| EnvFilter::new(INFO_LOG_LEVEL));
+
+    let file_env_filter =
+        EnvFilter::try_from_default_env().unwrap_or_else(|_| EnvFilter::new(DEBUG_LOG_LEVEL));
+
+    // Stdout layer
+    let stdout_layer = tracing_subscriber::fmt::layer()
+        .with_writer(std::io::stdout)
+        .with_target(true)
+        .with_filter(stdout_env_filter);
+    // File layer
+    let file = OpenOptions::new()
+        .create(true)
+        .append(true)
+        .open(LOG_FILE)
+        .expect("Failed to open log file");
+    let file_layer = tracing_subscriber::fmt::layer()
+        .with_ansi(false)
+        .with_writer(file)
+        .with_target(true)
+        .with_filter(file_env_filter);
+
+    tracing_subscriber::registry()
+        .with(stdout_layer)
+        .with(file_layer)
+        .init();
+}
+
 fn main() {
     let args = Cli::parse();
+    init_tracing();
+
     let mut task_manager = TaskManager::new().unwrap_or_else(|err| {
         eprintln!("Error initializing task manager: {}", err);
         std::process::exit(1);

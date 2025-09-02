@@ -3,6 +3,7 @@ use std::fs::File;
 use std::io;
 use std::io::prelude::*;
 use tempfile::NamedTempFile;
+use tracing::{debug, error};
 
 const FILE_SAVE_FAIL_MSG: &str = "Failed to save to file";
 
@@ -31,8 +32,8 @@ pub fn save_to_file<T: Serialize>(file_path: &str, tasks: &T) {
         Err(()) => return,
     };
     match temp_file.persist(file_path) {
-        Ok(_) => println!("Tasks saved."),
-        Err(e) => eprintln!("{FILE_SAVE_FAIL_MSG}: {}", e),
+        Ok(_) => debug!("Tasks saved."),
+        Err(e) => error!("{FILE_SAVE_FAIL_MSG}: {}", e),
     }
 }
 
@@ -47,19 +48,19 @@ fn save_to_temp_file<T: Serialize>(obj: &T) -> Result<tempfile::NamedTempFile, (
     let mut temp_file = match NamedTempFile::new() {
         Ok(file) => file,
         Err(e) => {
-            eprintln!("{FILE_SAVE_FAIL_MSG}: {}", e);
+            error!("{FILE_SAVE_FAIL_MSG}: {}", e);
             return Err(());
         }
     };
     let task_json = match serde_json::to_string_pretty(obj) {
         Ok(json) => json,
         Err(e) => {
-            eprintln!("{FILE_SAVE_FAIL_MSG}: {}", e);
+            error!("{FILE_SAVE_FAIL_MSG}: {}", e);
             return Err(());
         }
     };
     if let Err(e) = temp_file.write_all(task_json.as_bytes()) {
-        eprintln!("{FILE_SAVE_FAIL_MSG}: {}", e);
+        error!("{FILE_SAVE_FAIL_MSG}: {}", e);
         return Err(());
     }
     temp_file.flush().unwrap();
