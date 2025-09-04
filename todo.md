@@ -36,6 +36,7 @@ Week 4: Part 3 - Concurrent Clients
 Week 5: File Compressor with FFI
 
     •    Project: Let's create a command-line tool that can compress and decompress files using a battle-tested C library. Instead of writing a new C project, we'll link against an existing, widely-used one: zlib.
+If there's enough time, we'll also dabble into the openssl FFI
     •    Themes & Concepts:
     ◦    Foreign Function Interface (FFI): Writing the Rust "bindings" or declarations that allow us to safely call functions from the zlib shared library.
     ◦    Unsafe Rust: FFI requires dipping our toes into the unsafe keyword. We'll learn why it's needed and how to use it responsibly to create a safe abstraction.

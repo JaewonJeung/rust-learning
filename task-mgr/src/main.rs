@@ -3,8 +3,10 @@ use clap::{Parser, Subcommand};
 // main.rs using the library crate
 use task_mgr::Status;
 // use task_mgr::core::domain::Task; // this is impossible since only `Status` is re-exported from the library
+use anyhow::{Context, Result};
 use std::fs::OpenOptions;
 use task_mgr::TaskManager;
+use tracing::error;
 use tracing_subscriber::{EnvFilter, Layer, prelude::*};
 
 const LOG_FILE: &str = "task_mgr.log";
@@ -76,14 +78,15 @@ fn init_tracing() {
         .init();
 }
 
-fn main() {
+fn main() -> Result<()> {
     let args = Cli::parse();
     init_tracing();
 
-    let mut task_manager = TaskManager::new().unwrap_or_else(|err| {
-        eprintln!("Error initializing task manager: {}", err);
-        std::process::exit(1);
-    });
+    let mut task_manager = TaskManager::new()
+        .inspect_err(|e| {
+            error!("Failed to initialize task manager: {e}");
+        })
+        .context("Failed to initialize task manager")?;
 
     match args.action {
         Commands::Create {
@@ -108,5 +111,6 @@ fn main() {
         } => {
             task_manager.edit_task(&target_id, label, desc, priority, status);
         }
-    }
+    };
+    Ok(())
 }

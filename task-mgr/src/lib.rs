@@ -6,7 +6,7 @@ mod fs;
 use core::domain::Task;
 use fs::local::{LoadError, load_file};
 use std::collections::HashMap;
-use std::fmt;
+use thiserror::Error;
 use tracing::{debug, error, info};
 
 pub use core::domain::Status;
@@ -14,18 +14,12 @@ pub use core::domain::Status;
 // TODO use config file for this
 const TASKS_FILE: &str = "tasks.json";
 
+#[derive(Debug, Error)]
 pub enum TaskManagerError {
-    Io(std::io::Error),
-    Json(serde_json::Error),
-}
-
-impl fmt::Display for TaskManagerError {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            TaskManagerError::Io(e) => write!(f, "I/O error: {}", e),
-            TaskManagerError::Json(e) => write!(f, "JSON error: {}", e),
-        }
-    }
+    #[error("I/O error: {0}")]
+    Io(#[from] std::io::Error),
+    #[error("JSON error: {0}")]
+    Json(#[from] serde_json::Error),
 }
 
 #[derive(Default)]
@@ -38,7 +32,7 @@ impl TaskManager {
         debug!("Initializing task manager...");
         let task_mgr = match load_file(TASKS_FILE) {
             Ok(tasks) => Ok(Self { tasks }),
-            Err(LoadError::Io(e)) if e.kind() == std::io::ErrorKind::NotFound => {
+            Err(LoadError::FileNotFound) => {
                 info!("No existing tasks file found, starting fresh.");
                 Ok(Self::default())
             }
@@ -51,7 +45,7 @@ impl TaskManager {
                 Err(TaskManagerError::Io(e))
             }
         };
-        debug!("Initializing task manager...");
+        debug!("Initialized task manager...");
         task_mgr
     }
 

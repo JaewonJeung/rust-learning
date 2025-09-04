@@ -23,7 +23,7 @@ CLI task manager
 
 ## Non func
 - V optimize edit and delete (HM)
-- logging
+- V logging
 - unittests
 - config file/env variable reading
 - use traits to make it hexagonal
