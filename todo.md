@@ -57,3 +57,6 @@ Week 7: Profiling and Optimizing Redis
     ◦    Performance Measurement: Using benchmarking libraries like criterion to get reliable performance numbers for our server's command throughput.
     ◦    Profiling: Using tools like cargo-flamegraph and perf to create a visual profile of our application, showing exactly where it's spending its time.
     ◦    Optimization: Based on the profiling data, we'll identify bottlenecks (Is it lock contention? Memory allocation? Inefficient parsing?) and apply optimizations to make our server faster.
+
+alpha:
+- 3rd party software eval?

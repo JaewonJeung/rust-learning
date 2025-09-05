@@ -1,15 +1,15 @@
 use crate::core::domain::{Status, Task};
-use crate::fs::local::save_to_file;
+use crate::fs::port::Saver;
 use std::collections::HashMap;
 use tracing::info;
 use ulid::Ulid;
 
-pub fn create(
+pub fn create<T: Saver>(
     tasks: &mut HashMap<ulid::Ulid, Task>,
-    file_path: &str,
     label: String,
     desc: String,
     priority: u8,
+    saver: &T,
 ) {
     let task = Task {
         id: Ulid::new(),
@@ -20,5 +20,7 @@ pub fn create(
     };
     info!("Created task: {}", task.id);
     tasks.insert(task.id, task);
-    save_to_file(file_path, tasks);
+    if saver.save(tasks).is_err() {
+        info!("Failed to save tasks.");
+    }
 }

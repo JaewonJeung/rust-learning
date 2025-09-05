@@ -1,17 +1,16 @@
 use clap::{Parser, Subcommand};
 
-// main.rs using the library crate
-use task_mgr::Status;
 // use task_mgr::core::domain::Task; // this is impossible since only `Status` is re-exported from the library
 use anyhow::{Context, Result};
 use std::fs::OpenOptions;
-use task_mgr::TaskManager;
+use task_mgr::{LocalSaver, Status, TaskManager};
 use tracing::error;
 use tracing_subscriber::{EnvFilter, Layer, prelude::*};
 
 const LOG_FILE: &str = "task_mgr.log";
 const INFO_LOG_LEVEL: &str = "info";
 const DEBUG_LOG_LEVEL: &str = "debug";
+const TASKS_FILE: &str = "tasks.json";
 
 #[derive(Parser, Debug)]
 #[command(version)]
@@ -82,7 +81,7 @@ fn main() -> Result<()> {
     let args = Cli::parse();
     init_tracing();
 
-    let mut task_manager = TaskManager::new()
+    let mut task_manager = TaskManager::new(LocalSaver::new(TASKS_FILE.into()))
         .inspect_err(|e| {
             error!("Failed to initialize task manager: {e}");
         })

@@ -4,15 +4,13 @@ mod core;
 mod fs;
 
 use core::domain::Task;
-use fs::local::{LoadError, load_file};
+use fs::port::{LoadError, Saver};
 use std::collections::HashMap;
 use thiserror::Error;
 use tracing::{debug, error, info};
 
 pub use core::domain::Status;
-
-// TODO use config file for this
-const TASKS_FILE: &str = "tasks.json";
+pub use fs::local::LocalSaver;
 
 #[derive(Debug, Error)]
 pub enum TaskManagerError {
@@ -23,18 +21,22 @@ pub enum TaskManagerError {
 }
 
 #[derive(Default)]
-pub struct TaskManager {
+pub struct TaskManager<T: Saver> {
     tasks: HashMap<ulid::Ulid, Task>,
+    saver: T,
 }
 
-impl TaskManager {
-    pub fn new() -> Result<Self, TaskManagerError> {
+impl<T: Saver> TaskManager<T> {
+    pub fn new(saver: T) -> Result<Self, TaskManagerError> {
         debug!("Initializing task manager...");
-        let task_mgr = match load_file(TASKS_FILE) {
-            Ok(tasks) => Ok(Self { tasks }),
+        let task_mgr = match saver.load_file() {
+            Ok(tasks) => Ok(Self { tasks, saver }),
             Err(LoadError::FileNotFound) => {
                 info!("No existing tasks file found, starting fresh.");
-                Ok(Self::default())
+                Ok(TaskManager {
+                    tasks: HashMap::new(),
+                    saver,
+                })
             }
             Err(LoadError::Json(e)) => {
                 error!("Failed to parse the tasks data file. Corrupted file.");
@@ -50,11 +52,11 @@ impl TaskManager {
     }
 
     pub fn create_task(&mut self, label: String, desc: String, priority: u8) {
-        actions::create::create(&mut self.tasks, TASKS_FILE, label, desc, priority);
+        actions::create::create(&mut self.tasks, label, desc, priority, &self.saver);
     }
 
     pub fn delete_task(&mut self, id: &str) {
-        actions::delete::delete(&mut self.tasks, TASKS_FILE, id);
+        actions::delete::delete(&mut self.tasks, id, &self.saver);
     }
 
     pub fn list_tasks(&self) {
@@ -71,12 +73,12 @@ impl TaskManager {
     ) {
         actions::edit::edit(
             &mut self.tasks,
-            TASKS_FILE,
             target_id,
             label,
             desc,
             priority,
             status,
+            &self.saver,
         );
     }
 }
