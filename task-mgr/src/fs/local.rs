@@ -2,10 +2,11 @@ use crate::fs::port::{LoadError, SaveError, Saver};
 use serde::{Serialize, de::DeserializeOwned};
 use std::fs::File;
 use std::io::prelude::*;
+use std::path::{Path, PathBuf};
 use tempfile::NamedTempFile;
 
 pub struct LocalSaver {
-    file_path: String,
+    file_path: PathBuf,
 }
 
 impl Saver for LocalSaver {
@@ -21,8 +22,10 @@ impl Saver for LocalSaver {
 }
 
 impl LocalSaver {
-    pub fn new(file_path: String) -> Self {
-        Self { file_path }
+    pub fn new(file_path: impl AsRef<Path>) -> Self {
+        Self {
+            file_path: file_path.as_ref().to_path_buf(),
+        }
     }
 
     fn save_to_temp_file<T: Serialize>(

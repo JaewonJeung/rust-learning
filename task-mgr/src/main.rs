@@ -81,7 +81,7 @@ fn main() -> Result<()> {
     let args = Cli::parse();
     init_tracing();
 
-    let mut task_manager = TaskManager::new(LocalSaver::new(TASKS_FILE.into()))
+    let mut task_manager = TaskManager::new(LocalSaver::new(TASKS_FILE))
         .inspect_err(|e| {
             error!("Failed to initialize task manager: {e}");
         })
