@@ -2,15 +2,17 @@
 mod actions;
 mod core;
 mod fs;
+mod test_support;
 
 use core::domain::Task;
-use fs::port::{LoadError, Saver};
 use std::collections::HashMap;
 use thiserror::Error;
 use tracing::{debug, error, info};
 
 pub use core::domain::Status;
 pub use fs::local::LocalSaver;
+pub use fs::port::{LoadError, SaveError, Saver};
+pub use test_support::memory::MemorySaver;
 
 #[derive(Debug, Error)]
 pub enum TaskManagerError {
