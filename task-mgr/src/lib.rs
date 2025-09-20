@@ -12,7 +12,6 @@ use tracing::{debug, error, info};
 pub use core::domain::Status;
 pub use fs::local::LocalSaver;
 pub use fs::port::{LoadError, SaveError, Saver};
-pub use test_support::memory::MemorySaver;
 
 #[derive(Debug, Error)]
 pub enum TaskManagerError {

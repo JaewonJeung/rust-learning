@@ -65,9 +65,10 @@ fn init_tracing() {
         .append(true)
         .open(LOG_FILE)
         .expect("Failed to open log file");
+    let (non_blocking, _guard) = tracing_appender::non_blocking(file);
     let file_layer = tracing_subscriber::fmt::layer()
         .with_ansi(false)
-        .with_writer(file)
+        .with_writer(non_blocking)
         .with_target(true)
         .with_filter(file_env_filter);
 

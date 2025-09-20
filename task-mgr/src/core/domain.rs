@@ -1,6 +1,6 @@
 use std::str::FromStr;
 
-use serde_derive::{Deserialize, Serialize};
+use serde::{Deserialize, Serialize};
 use ulid::Ulid;
 
 /// normally, you would have an impl of this to have a constructor and getters

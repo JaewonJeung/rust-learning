@@ -33,6 +33,9 @@ Week 4: Part 3 - Concurrent Clients
     ▪    Multithreading/Async: This is the core of this week. We'll use tokio's task spawning to handle each client connection in its own asynchronous task.
     ▪    State Management: Learning to share state (our HashMap data store) safely across multiple threads/tasks using tools like Arc and Mutex.
 
+week 4.5 producer consumer work
+- custom threading work vs rayon?
+
 Week 5: File Compressor with FFI
 
     •    Project: Let's create a command-line tool that can compress and decompress files using a battle-tested C library. Instead of writing a new C project, we'll link against an existing, widely-used one: zlib.
