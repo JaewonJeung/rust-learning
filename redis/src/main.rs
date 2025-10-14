@@ -1,4 +1,3 @@
-use tokio::io;
 use tokio::net::TcpListener;
 
 use redis::handle_connection;
@@ -15,5 +14,3 @@ async fn main() -> anyhow::Result<()> {
         });
     }
 }
-
-// echo server main entry

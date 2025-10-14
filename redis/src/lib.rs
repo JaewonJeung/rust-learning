@@ -1,5 +1,12 @@
-use tokio::io::{self, AsyncReadExt, AsyncWriteExt};
+mod connection;
+mod frame;
+mod parse;
+
+use tokio::io::{self, AsyncWriteExt};
 use tokio::net::TcpStream;
+
+pub type Error = Box<dyn std::error::Error + Send + Sync>;
+pub type Result<T> = std::result::Result<T, Error>;
 
 /// Handle a single connection: read up to 3 bytes then echo them back.
 /// Returns the number of bytes echoed.
@@ -22,6 +29,7 @@ pub async fn handle_connection(mut socket: TcpStream) -> io::Result<usize> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use tokio::io::{AsyncReadExt, AsyncWriteExt};
     use tokio::net::TcpListener;
 
     #[tokio::test]
